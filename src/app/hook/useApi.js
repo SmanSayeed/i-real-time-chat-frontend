@@ -19,8 +19,13 @@ const useApi = (url, options = {}) => {
         setLoading(false);
       }
     };
-    fetchData();
-  }, [url, options]);
+
+    // Only fetch if url is provided and has not been fetched yet
+    if (url) {
+      fetchData();
+    }
+
+  }, [url]); // Only trigger the effect when the URL changes
 
   return { data, loading, error };
 };

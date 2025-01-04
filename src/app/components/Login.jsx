@@ -1,23 +1,23 @@
-// src/components/Login.jsx
 'use client'
+// src/components/Login.jsx
 import { useState, useEffect } from 'react';
 import { useChat } from '../context/ChatContext';
+import useApi from '../hook/useApi';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
-  const { loginUser, users } = useChat();
+  const { loginUser } = useChat();
+
+  // Use useApi to fetch users
+  const { data: users, loading, error } = useApi('/users');  // This will get all users
 
   useEffect(() => {
-    // Fetch users (replace this with your actual API call)
-    const fetchUsers = async () => {
-      // Simulating API call
-      const res = await fetch('/users');  // Fetch all users
-      const data = await res.json();
-      setSelectedUser(data[0] || null);  // Set default user as the first one
-    };
-    fetchUsers();
-  }, []);
+    // Automatically select the first user once data is fetched
+    if (users?.length > 0) {
+      setSelectedUser(users[0]);
+    }
+  }, [users]); // Only run when users data changes
 
   const handleLogin = () => {
     if (email && selectedUser) {
@@ -26,6 +26,9 @@ const Login = () => {
       console.error('Please select a user and provide an email');
     }
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error loading users: {error.message}</p>;
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -47,7 +50,7 @@ const Login = () => {
             className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select User</option>
-            {users.map((u) => (
+            {users?.map((u) => (
               <option key={u._id} value={u._id}>{u.username}</option>
             ))}
           </select>

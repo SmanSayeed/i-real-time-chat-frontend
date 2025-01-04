@@ -1,10 +1,10 @@
-// src/components/Chat.jsx
 'use client'
+// src/components/Chat.jsx
 import { useEffect, useState } from 'react';
 import { useChat } from '../context/ChatContext';
 
 const Chat = () => {
-  const { user, selectedUser, messages, sendMessage } = useChat();  // Access selectedUser directly from context
+  const { user, selectedUser, messages, sendMessage, setSelectedUser } = useChat();
   const [newMessage, setNewMessage] = useState('');
 
   const handleSendMessage = () => {
@@ -14,7 +14,7 @@ const Chat = () => {
         to_user_id: selectedUser._id,
         message: newMessage
       };
-      sendMessage(messageData);  // Send message
+      sendMessage(messageData);
       setNewMessage('');
     } else {
       console.error('Selected user is not valid or not selected');
@@ -24,7 +24,15 @@ const Chat = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       <div className="flex-1 p-6">
-        <h2 className="text-2xl font-semibold text-gray-800">Welcome, {user?.username}</h2>
+        <h2 className="text-2xl font-semibold text-gray-800">
+          Welcome, {user?.email || user?.username}
+        </h2>
+
+        {selectedUser && (
+          <div className="my-4">
+            <h3 className="text-xl">Chatting with: {selectedUser.username} ({selectedUser.email})</h3>
+          </div>
+        )}
 
         <div className="bg-white p-4 rounded-lg shadow-lg h-72 overflow-y-scroll mb-4">
           {messages.map((msg) => (
